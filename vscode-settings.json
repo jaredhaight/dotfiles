@@ -1,6 +1,6 @@
 // Place your settings in this file to overwrite the default settings
 {
-    	// Controls auto save of dirty files. Accepted values:  "off", "afterDelay", "onFocusChange". If set to "afterDelay" you can configure the delay in "files.autoSaveDelay".
+    // Controls auto save of dirty files. Accepted values:  "off", "afterDelay", "onFocusChange". If set to "afterDelay" you can configure the delay in "files.autoSaveDelay".
 	"files.autoSave": "afterDelay",
 
 	// Controls the delay in ms after which a dirty file is saved automatically. Only applies when "files.autoSave" is set to "afterDelay"
@@ -11,6 +11,9 @@
 
 	// Enables font ligatures
     "editor.fontLigatures": true,
+
+    // Controls if quick suggestions should show up or not while typing
+    "editor.quickSuggestions": false,
 
     // Controls how folders are being reopened after a restart. Select 'none' to never reopen a folder, 'one' to reopen the last folder you worked on or 'all' to reopen all folders of your last session.
     "window.reopenFolders": "none",
