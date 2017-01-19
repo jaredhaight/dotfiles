@@ -11,7 +11,9 @@ _fishy_collapsed_wd() {
 
 local user_color='green'; [ $UID -eq 0 ] && user_color='red'
 local path_color='green';
-PROMPT='%{$fg[$user_color]%}%n@%m %{$reset_color%}%{$fg_bold[$path_color]%}$(_fishy_collapsed_wd)%{$reset_color%}%(!.#.>) '
+PROMPT='
+[%D %*][%{$fg[$user_color]%}%n@%m%{$reset_color%}]
+%{$reset_color%}%{$fg_bold[$path_color]%}$(_fishy_collapsed_wd)%{$reset_color%}%(!.#.>) '
 PROMPT2='%{$fg[red]%}\ %{$reset_color%}'
 
 local return_status="%{$fg_bold[red]%}%(?..%?)%{$reset_color%}"
@@ -28,3 +30,5 @@ ZSH_THEME_GIT_PROMPT_DELETED="%{$fg_bold[red]%}-"
 ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg_bold[magenta]%}>"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg_bold[yellow]%}#"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg_bold[cyan]%}?"
+
+precmd() { eval 'RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$]: $(history | tail -n1 | sed "s/^[ ]*[0-9]\+[ ]*//" ) [$RETRN_VAL]"' }
