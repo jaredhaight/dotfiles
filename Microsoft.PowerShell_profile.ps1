@@ -10,6 +10,7 @@ function Test-Administrator
    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole($role)  
 }
 
+# From: https://adsecurity.org/?p=478
 function ConvertTo-Base64
 {
     param(
@@ -29,6 +30,30 @@ function ConvertFrom-Base64
     )
     $DecodedText = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($String))
     $DecodedText
+}
+
+# From: https://blogs.msdn.microsoft.com/luc/2011/01/21/powershell-getting-the-hash-value-for-a-string/
+function Get-StringHash
+{
+    param(
+        [string]$String,
+        [string]$Hash="SHA256"
+    )
+
+    $hasher = switch ($Hash){
+        "SHA512" {new-object System.Security.Cryptography.SHA512Managed}
+        "SHA256" {new-object System.Security.Cryptography.SHA256Managed}
+        "SHA1" {new-object System.Security.Cryptography.SHA1Managed}
+        "MD5" {new-object System.Security.Cryptography.MD5CryptoServiceProvider}
+    }
+
+    $toHash = [System.Text.Encoding]::UTF8.GetBytes($string)
+    $hashByteArray = $hasher.ComputeHash($toHash)
+    foreach($byte in $hashByteArray)
+    {
+        $res += $byte.ToString("x2")
+    }
+    return $res;
 }
 
 function prompt 
