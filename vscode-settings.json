@@ -18,11 +18,6 @@
     // Zoom the font of the editor when using mouse wheel and holding Ctrl
     "editor.mouseWheelZoom": true,
     
-    // Controls how folders are being reopened after a restart. Select 'none' to 
-    // never reopen a folder, 'one' to reopen the last folder you worked on or 'all' 
-    // to reopen all folders of your last session.
-    "window.reopenFolders": "none",
-
     // Control the visibility of the menu bar. A setting of 'toggle' means that the 
     // menu bar is hidden and a single press of the Alt key will show it. By default, 
     // the menu bar will be visible, unless the window is full screen.
@@ -33,5 +28,11 @@
     
     // Enable crash reports to be sent to Microsoft.
     // This option requires restart to take effect.
-    "telemetry.enableCrashReporter": false
-  }
+    "telemetry.enableCrashReporter": false,
+  
+      // Controls how windows are being reopened after a restart. Select 'none' to always 
+      // start with an empty window, 'one' to reopen the last window you worked on, 
+      // 'folders' to reopen all folders you had opened or 'all' to reopen all windows of 
+      // your last session.
+    "window.restoreWindows": "none"
+}
