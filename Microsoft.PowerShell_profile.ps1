@@ -32,16 +32,15 @@ function ConvertFrom-Base64
 }
 
 function prompt 
-{
+{  
+  $prompt_text = "PS>"
   Write-Host ""
+  Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss"))+ "] [" + $(Get-Location).path + "]")
   if (Test-Administrator) 
   {
-    Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss"))+ "]:[" + $([System.Environment]::UserName) + "(Admin)]")
+    Write-Host -ForegroundColor Red "[ADMIN]" -NoNewline
+    $prompt_text = " PS#"
   }
-  else 
-  {
-    Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss"))+ "]:[" + $([System.Environment]::UserName) + "]:[" + $(Get-Location).path + "]")
-  }
-  Write-Host ("PS>" ) -NoNewLine
+  Write-Host $prompt_text -NoNewLine
   Return " "
 }
