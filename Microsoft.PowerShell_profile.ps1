@@ -14,7 +14,7 @@ function Test-Administrator
 function ConvertTo-Base64
 {
     param(
-        [Paramater(Mandatory=$True)]
+        [Parameter(Mandatory=$True)]
         [string]$String
     )
     $Bytes = [System.Text.Encoding]::Unicode.GetBytes($String)
@@ -25,7 +25,7 @@ function ConvertTo-Base64
 function ConvertFrom-Base64
 {
     param(
-        [Paramater(Mandatory=$True)]
+        [Parameter(Mandatory=$True)]
         [string]$String
     )
     $DecodedText = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($String))
