@@ -56,6 +56,10 @@ function Get-StringHash
     return $res;
 }
 
+function Get-ExternalIPAddress {
+  return (New-Object Net.WebClient).DownloadString('http://ifconfig.io/ip')
+}
+
 function prompt 
 {  
   $prompt_text = "PS>"
