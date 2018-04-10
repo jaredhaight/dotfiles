@@ -48,6 +48,9 @@
   // your last session.
   "window.restoreWindows": "none",
   
+  // Ignore that Git isnt installed.
+  "git.ignoreMissingGitWarning": true,
+  
   // Python specific settings
   "[python]": {
     "editor.insertSpaces": true,
@@ -55,5 +58,4 @@
   },
   "git.autofetch": true,
   "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-  "powershell.enableProfileLoading": false
 }
