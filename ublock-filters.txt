@@ -1,0 +1,9 @@
+! 7/20/2018, 3:13:29 PM https://www.facebook.com/
+www.facebook.com##.egoOrganicColumn.v_hnbl49b5o.pagelet > ._1-ia
+
+! 7/20/2018, 3:13:47 PM https://www.facebook.com/
+www.facebook.com###pagelet_video_home_suggested_for_you_rhc > ._1-ia > ._4-u8._20os._2tyk._1-ib._4-u2
+
+twitter.com##[data-suggestion-json*=ActivityTweet]
+twitter.com##.tweet:has(.with-icn.tweet-context):if(.with-icn.tweet-context:has-text(/liked/))
+twitter.com##.tweet:has(.with-icn.tweet-context):if(.with-icn.tweet-context:has-text(/others follow/))
