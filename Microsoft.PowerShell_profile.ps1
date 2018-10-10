@@ -1,7 +1,6 @@
-if ((Test-Path "C:\pslogs") -eq $False) {
-	New-Item C:\PSLogs -Type Directory -Force | Out-Null
-}
-Start-Transcript "C:\pslogs\powershell_$([Environment]::UserName)_$($(Get-Date).ToString(`"MMddyyyy`")).log" -Append -NoClobber
+# Change the way up/down works in console (Source: https://winsysblog.com/2017/10/save-hours-time-psreadline-tweak.html)
+Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 function Test-Administrator
 {  
@@ -57,7 +56,7 @@ function Get-StringHash
 }
 
 function Get-ExternalIPAddress {
-  return (New-Object Net.WebClient).DownloadString('http://ifconfig.io/ip')
+  return (New-Object Net.WebClient).DownloadString('http://ifconfig.io/ip').Replace("`n","")
 }
 
 function prompt { 
