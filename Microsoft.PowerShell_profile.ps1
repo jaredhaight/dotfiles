@@ -59,6 +59,40 @@ function Get-ExternalIPAddress {
   return (New-Object Net.WebClient).DownloadString('http://ifconfig.io/ip').Replace("`n","")
 }
 
+function Split-String {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$String,
+    [int]$MinLength = 50,
+    [int]$MaxLength = 120,
+    [string]$VariableName = "data",
+    [ValidateSet("PowerShell", "CSharp")]
+    $Format = "PowerShell"
+  )
+
+  $index = 0
+  $length = $String.length
+
+  if ($Format -eq "CSharp") {
+    Write-Output "string $VariableName = `"`";"
+  }
+
+  while ($index -lt $length) {
+    $substringSize = Get-Random -Minimum $MinLength -Maximum $MaxLength
+    if (($index + $substringSize) -gt $length) {
+      $substringSize = $length - $index
+    }
+    $subString = $string.substring($index, $substringSize)
+    if ($Format -eq "PowerShell") {
+      Write-Output "`$$VariableName += `"$subString`""
+    }
+    if ($Format -eq "CSharp") {
+      Write-Output "$VariableName += `"$subString`";"
+    }
+    $index += $substringSize
+  }
+}
+
 function prompt { 
   Write-Host "" 
   Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $(Get-Location).path + "]") -NoNewline
