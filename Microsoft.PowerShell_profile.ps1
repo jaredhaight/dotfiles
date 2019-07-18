@@ -1,7 +1,3 @@
-# Change the way up/down works in console (Source: https://winsysblog.com/2017/10/save-hours-time-psreadline-tweak.html)
-Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
-Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
-
 function Test-Administrator
 {  
    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
@@ -101,7 +97,7 @@ function prompt {
   if (Test-Path $(Join-Path $pwd ".git")) {
     $output = &git status
     $branch = $output[0].Replace('On branch ', '')
-    if ($output[1] -like '*clean') {
+    if ($output -like '*clean') {
       Write-Host -NoNewline -ForegroundColor Green " [$branch]"
     }
     else {
