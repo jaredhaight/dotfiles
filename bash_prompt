@@ -118,9 +118,22 @@ function set_bash_prompt () {
 
   # Set the bash prompt variable.
   PS1="
-${PYTHON_VIRTUALENV}[${USER_COLOR}\u@\h${COLOR_NONE}:${GRAY}\w${COLOR_NONE}] ${BRANCH}
+${PYTHON_VIRTUALENV}[${USER_COLOR}\u@wubuntu${COLOR_NONE}:${GRAY}\w${COLOR_NONE}] ${BRANCH}
 ${PROMPT_SYMBOL} "
 }
 
 # Tell bash to execute this function just before displaying its prompt.
 PROMPT_COMMAND=set_bash_prompt
+
+# Keychain stuff for WSL
+/usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
+source $HOME/.keychain/$HOSTNAME-sh
+
+# umask for WSL
+umask 027
+
+function get-external-ip () {
+  curl https://api.ipify.org
+}
+
+export PATH=$HOME/.cargo/bin:$PATH
