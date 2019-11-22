@@ -122,18 +122,22 @@ ${PYTHON_VIRTUALENV}[${USER_COLOR}\u@wubuntu${COLOR_NONE}:${GRAY}\w${COLOR_NONE}
 ${PROMPT_SYMBOL} "
 }
 
+function get-external-ip () {
+  curl https://api.ipify.org
+}
+
 # Tell bash to execute this function just before displaying its prompt.
 PROMPT_COMMAND=set_bash_prompt
 
 # Keychain stuff for WSL
-/usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
-source $HOME/.keychain/$HOSTNAME-sh
-
-# umask for WSL
-umask 027
-
-function get-external-ip () {
-  curl https://api.ipify.org
-}
+if grep -q Microsoft /proc/version; then
+  umask 027
+  if [-f /usr/bin/keychain] then;
+    /usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
+    source $HOME/.keychain/$HOSTNAME-sh
+  else
+    echo "Keychain not found. You might want to install it with: apt install keychain"
+  fi
+fi
 
 export PATH=$HOME/.cargo/bin:$PATH
