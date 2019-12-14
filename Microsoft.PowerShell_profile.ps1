@@ -88,16 +88,23 @@ function Split-String {
     $index += $substringSize
   }
 }
+try {
+  Get-Command git.exe -ErrorAction Stop
+  $gitInstalled = $true
+}
+catch {
+  $gitInstalled = $false
+}
 
 function prompt { 
   Write-Host "" 
   Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $(Get-Location).path + "]") -NoNewline
   
   # Check if we're in a git repo
-  if (Test-Path $(Join-Path $pwd ".git")) {
+  if ($gitInstalled -and (Test-Path $(Join-Path $pwd ".git"))) {
     $output = &git status
     $branch = $output[0].Replace('On branch ', '')
-    if ($output -like '*clean') {
+    if ($output[1] -like '*clean') {
       Write-Host -NoNewline -ForegroundColor Green " [$branch]"
     }
     else {
@@ -105,6 +112,7 @@ function prompt {
     }
   }
   Write-Host ""
+  
   $prompt_text = "PS>"
   if (Test-Administrator) {
     Write-Host -ForegroundColor Red "[ADMIN]" -NoNewline
