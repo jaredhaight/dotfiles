@@ -89,7 +89,7 @@ function Split-String {
   }
 }
 try {
-  Get-Command git.exe -ErrorAction Stop
+  Get-Command git.exe -ErrorAction Stop | Out-Null
   $gitInstalled = $true
 }
 catch {
