@@ -50,6 +50,17 @@ function Get-ExternalIPAddress {
   return (New-Object Net.WebClient).DownloadString('http://ifconfig.io/ip').Replace("`n", "")
 }
 
+function ConvertTo-ShortPath ($path) {
+  $firstSlash = $path.IndexOf("\")
+  $drive = $path.Substring(0, $firstSlash)
+  $lastSlash = $path.LastIndexOf("\")
+  $secondToLastSlash = $path.LastIndexOf("\", $lastSlash - 1)
+  $thirdToLastSlash = $path.LastIndexOf("\", $secondToLastSlash - 1)
+  $tail = $path.Substring($thirdToLastSlash)
+  $shortPath = "$drive\..$tail"
+  $shortPath
+}
+
 function Split-String {
   param (
     [Parameter(Mandatory = $true)]
@@ -107,7 +118,11 @@ catch {
 
 function prompt { 
   Write-Host "" 
-  Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $(Get-Location).path + "]") -NoNewline
+  $pwd = $(Get-Location).path
+  if ($pwd.Length -gt 80) {
+    $pwd = ConvertTo-ShortPath $pwd
+  }
+  Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $pwd + "]") -NoNewline
   # Check if we're in a git repo
   if ($gitInstalled -and (Test-GitRepo)) {
     $output = &git status
