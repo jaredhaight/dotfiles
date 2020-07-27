@@ -1,7 +1,46 @@
-function Test-Administrator {  
-  $user = [Security.Principal.WindowsIdentity]::GetCurrent();
-  $role = [Security.Principal.WindowsBuiltinRole]::Administrator
-  (New-Object Security.Principal.WindowsPrincipal $user).IsInRole($role)  
+function Add-SSHKeys {
+  ssh-add -K ~/.ssh/id_ed25519_v2
+}
+
+function Test-Administrator {
+  if ($PSVersionTable.Platform -eq 'Win32NT' -or $null -eq $PSVersionTable.Platform) {
+    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
+    $role = [Security.Principal.WindowsBuiltinRole]::Administrator
+    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole($role)  
+  }
+}
+
+function New-RandomString {
+  param (
+    $Length = 8,
+    [switch]
+    $Lower = $false,
+    [switch]
+    $Upper = $false,
+    [switch]
+    $Number = $false,
+    [switch]
+    $Special = $false,
+    [switch]
+    $All = $false
+  )
+  if ($Lower -or $All -or -not ($Upper -or $Number -or $Special)) {
+    $range = (97..122)
+  }
+
+  if ($Upper -or $All) {
+    $range = $range + (65..90)
+  }
+
+  if ($Number -or $All) {
+    $range = $range + (48..57)
+  }
+
+  if ($Special -or $All) {
+    $range = $range + (33..47)
+  }
+
+  return -join ($range | Get-Random -Count $Length | ForEach-Object {[char]$_})
 }
 
 # From: https://adsecurity.org/?p=478
@@ -51,13 +90,15 @@ function Get-ExternalIPAddress {
 }
 
 function ConvertTo-ShortPath ($path) {
-  $firstSlash = $path.IndexOf("\")
-  $drive = $path.Substring(0, $firstSlash)
-  $lastSlash = $path.LastIndexOf("\")
-  $secondToLastSlash = $path.LastIndexOf("\", $lastSlash - 1)
-  $thirdToLastSlash = $path.LastIndexOf("\", $secondToLastSlash - 1)
-  $tail = $path.Substring($thirdToLastSlash)
-  $shortPath = "$drive\..$tail"
+  $seperator = $path.Provider.ItemSeparator
+  $drive = $path.Drive.Root
+  $pathString = $path.ToString()
+
+  $lastSlash = $pathString.LastIndexOf($seperator)
+  $secondToLastSlash = $pathString.LastIndexOf($seperator, $lastSlash - 1)
+  $thirdToLastSlash = $pathString.LastIndexOf($seperator, $secondToLastSlash - 1)
+  $tail = $pathString.Substring($thirdToLastSlash)
+  $shortPath = "$drive..$tail"
   $shortPath
 }
 
@@ -96,20 +137,30 @@ function Split-String {
 }
 
 function Test-GitRepo {
-  $pwd = Get-Location
-  $isGitDir = Test-Path $(Join-Path $pwd ".git")
-  $parentDir = (Get-Item $pwd).Parent
-  while ((![string]::IsNullOrEmpty($parentDir.ToString()) -and ($isGitDir -eq $false))) {
-    $gitPath = Join-Path $parentDir.FullName ".git"
+  [CmdletBinding()]
+  param (
+      [Parameter()]
+      $Path
+  )
+  $currentDir = Get-Location
+  Write-Verbose "Current Dir: $currentDir"
+  $isGitDir = Test-Path $(Join-Path $currentDir ".git")
+  $index = 0
+  $parentDir = Split-Path $currentDir -Parent
+  Write-Verbose "$index - $parentDir - Git Repo? $isGitDir"
+  while ((![string]::IsNullOrEmpty($parentDir) -and ($isGitDir -eq $false))) {
+    $gitPath = Join-Path $parentDir ".git"
     $isGitDir = Test-Path $gitPath
-    $parentDir = $parentDir.Parent
+    $parentDir = Split-Path $parentDir -Parent
+    $index += 1
+    Write-Verbose "$index - $parentDir - Git Repo? $isGitDir"
   }
   $isGitDir
 }
 
 # Check if git is installed
 try {
-  Get-Command git.exe -ErrorAction Stop | Out-Null
+  Get-Command git -ErrorAction Stop | Out-Null
   $gitInstalled = $true
 }
 catch {
@@ -117,30 +168,42 @@ catch {
 }
 
 function prompt { 
-  Write-Host "" 
-  $pwd = $(Get-Location).path
-  if ($pwd.Length -gt 80) {
-    $pwd = ConvertTo-ShortPath $pwd
+  Write-Host ""
+
+  $currentDir = Get-Location
+  if ($currentDir.Path.Length -gt 55) {
+    $currentDir = ConvertTo-ShortPath $currentDir
   }
-  Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $pwd + "]") -NoNewline
+  
+  Write-Host ("[" + ($(Get-Date).toString("MM/dd/yyyy hh:mm:ss")) + "] [" + $currentDir + "]") -NoNewline
+  
   # Check if we're in a git repo
   if ($gitInstalled -and (Test-GitRepo)) {
-    $output = &git status
-    $branch = $output[0].Replace('On branch ', '')
-    if ($output[3] -like '*clean') {
-      Write-Host -NoNewline -ForegroundColor Green " [$branch]"
-    }
-    else {
-      Write-Host -NoNewLine -ForegroundColor Red " [$branch]"
+    $output = &git status 2>&1
+    if ($output.GetType() -ne [System.Management.Automation.ErrorRecord]) {
+      $branch = $output[0].Replace('On branch ', '')
+      if ($output[3] -like '*clean') {
+        Write-Host -NoNewline -ForegroundColor Green " [$branch]"
+      }
+      else {
+        Write-Host -NoNewLine -ForegroundColor Red " [$branch]"
+      }
     }
   }
 
-  $prompt_text = "PS>"
+  # New line after the status stuff ([TIME] [DIRECTORY] [GIT BRANCH])
   Write-Host ""
+  
+  # Determine our prompt, either `PS>` or `[ADMIN] PS#`
+  $prompt_text = "PS>"
   if (Test-Administrator) {
     Write-Host -ForegroundColor Red "[ADMIN]" -NoNewline
-    $prompt_text = " PS#"
+    $prompt_text = "PS#"
   }
+
+  # Print prompt
   Write-Host $prompt_text -NoNewLine
   Return " "
 }
+
+# Add-SSHKeys
