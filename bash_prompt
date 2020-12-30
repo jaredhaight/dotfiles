@@ -118,7 +118,7 @@ function set_bash_prompt () {
 
   # Set the bash prompt variable.
   PS1="
-${PYTHON_VIRTUALENV}[${USER_COLOR}\u@wubuntu${COLOR_NONE}:${GRAY}\w${COLOR_NONE}] ${BRANCH}
+${PYTHON_VIRTUALENV}[${USER_COLOR}\u${COLOR_NONE}:${GRAY}\w${COLOR_NONE}] ${BRANCH}
 ${PROMPT_SYMBOL} "
 }
 
@@ -132,7 +132,7 @@ PROMPT_COMMAND=set_bash_prompt
 # Keychain stuff for WSL
 if grep -q Microsoft /proc/version; then
   umask 027
-  if [-f /usr/bin/keychain] then;
+  if [ -f /usr/bin/keychain ]; then
     /usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
     source $HOME/.keychain/$HOSTNAME-sh
   else
